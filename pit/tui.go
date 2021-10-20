@@ -34,9 +34,26 @@ type tui struct {
 	elapsed    int64
 	code1xx    int64
 	code2xx    int64
+	// =============
 	code3xx    int64
+	code301    int64 // 301 Moved Permanently
+	code302    int64 // 302 Found
+	code303    int64 // 303 See Other
+	code304    int64 // 304 Not Modified
+	code307    int64 // 307 Temporary Redirect
+	code308    int64 // 308 Permanent Redirect
 	code4xx    int64
+	code400    int64 // 400 Bad Request
+	code401    int64 // 401 Unauthorized
+	code403    int64 // 403 Forbidden
+	code404    int64 //
+	code405    int64 // 405 Method Not Allowed
 	code5xx    int64
+	code500    int64 // 500 Internal Server Error
+	code502    int64 // 502 Bad Gateway
+	code503    int64 // 503 Service Unavailable
+	code504    int64 // 504 Gateway Timeout
+	code505    int64 // 505 HTTP Version Not Supported
 	codeOthers int64
 	latencies  []int64
 	rps        []float64
@@ -121,10 +138,59 @@ func (t *tui) appendCode(code int) {
 	case 2:
 		t.code2xx++
 	case 3:
+		if code == 301 {
+			t.code301++
+		}
+		if code == 302 {
+			t.code302++
+		}
+		if code == 303 {
+			t.code303++
+		}
+		if code == 304 {
+			t.code304++
+		}
+		if code == 307 {
+			t.code307++
+		}
+		if code == 308 {
+			t.code308++
+		}
 		t.code3xx++
 	case 4:
+		if code == 400 {
+			t.code400++
+		}
+		if code == 401 {
+			t.code401++
+		}
+		if code == 403 {
+			t.code403++
+		}
+		if code == 404 {
+			t.code404++
+		}
+		if code == 405 {
+			t.code405++
+		}
 		t.code4xx++
 	case 5:
+		// ==================================================================
+		if code == 500 {
+			t.code500++
+		}
+		if code == 502 {
+			t.code502++
+		}
+		if code == 503 {
+			t.code503++
+		}
+		if code == 504 {
+			t.code504++
+		}
+		if code == 505 {
+			t.code504++
+		}
 		t.code5xx++
 	default:
 		t.codeOthers++
@@ -266,19 +332,67 @@ func (t *tui) writeCodes() {
 
 	_, _ = t.buf.WriteString("2xx - ")
 	t.writeInt(int(atomic.LoadInt64(&t.code2xx)), "#00ff00")
-	_, _ = t.buf.WriteString(", ")
+	_, _ = t.buf.WriteString("\n  ")
 
 	_, _ = t.buf.WriteString("3xx - ")
 	t.writeInt(int(atomic.LoadInt64(&t.code3xx)), "#ffff00")
-	_, _ = t.buf.WriteString(", ")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("301 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code301)), "#ffff00")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("302 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code302)), "#ffff00")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("303 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code303)), "#ffff00")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("304 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code304)), "#ffff00")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("307 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code307)), "#ffff00")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("308 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code308)), "#ffff00")
+	_, _ = t.buf.WriteString("\n  ")
 
 	_, _ = t.buf.WriteString("4xx - ")
 	t.writeInt(int(atomic.LoadInt64(&t.code4xx)), "#ff8700")
-	_, _ = t.buf.WriteString(", ")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("400 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code400)), "#ff8700")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("401 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code401)), "#ff8700")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("403 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code403)), "#ff8700")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("404 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code404)), "#ff8700")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("405 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code405)), "#ff8700")
+	_, _ = t.buf.WriteString("\n  ")
 
 	_, _ = t.buf.WriteString("5xx - ")
 	t.writeInt(int(atomic.LoadInt64(&t.code5xx)), "#870000")
-	_, _ = t.buf.WriteString("\n  ")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("500 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code500)), "#444")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("502 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code502)), "#444")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("503 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code503)), "#444")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("504 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code504)), "#444")
+	_, _ = t.buf.WriteString("|")
+	_, _ = t.buf.WriteString("505 - ")
+	t.writeInt(int(atomic.LoadInt64(&t.code505)), "#444")
+	_, _ = t.buf.WriteString("\n")
 
 	_, _ = t.buf.WriteString("Others - ")
 	t.writeInt(int(atomic.LoadInt64(&t.codeOthers)), "#444")

@@ -101,6 +101,7 @@ func (c *fasthttpClient) do() (code int, latency time.Duration, err error) {
 	}
 
 	code = resp.StatusCode()
+
 	latency = time.Since(start)
 
 	return
